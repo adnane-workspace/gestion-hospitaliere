@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ConsultationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- ESPACE MEDECIN ---
     Route::middleware('auth.role:medecin')->group(function () {
         Route::get('/medecin/dashboard', [DashboardController::class, 'index'])->name('medecin.dashboard');
+        Route::get('/medecin/consultations', [ConsultationController::class, 'index'])->name('medecin.consultations');
         // Autres routes médecin ici...
     });
 

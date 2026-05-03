@@ -203,7 +203,11 @@
             </li>
 
             @if(auth()->user()->isMedecin())
-                <li class="nav-item"><a href="#" class="nav-link">📅 Mes Consultations</a></li>
+                <li class="nav-item">
+                    <a href="{{ route('medecin.consultations') }}" class="nav-link {{ request()->routeIs('medecin.consultations') ? 'active' : '' }}">
+                        📅 Mes Consultations
+                    </a>
+                </li>
                 <li class="nav-item"><a href="/patients" class="nav-link">👥 Mes Patients</a></li>
             @endif
 

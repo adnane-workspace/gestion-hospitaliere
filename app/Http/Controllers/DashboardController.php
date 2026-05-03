@@ -42,7 +42,13 @@ class DashboardController extends Controller
                 ->orderBy('date_heure_debut', 'asc')
                 ->get();
 
-            return view('medecin.dashboard', compact('stats', 'appointments'));
+            $recent_consultations = Consultation::with('patient.user')
+                ->where('medecin_id', $medecin->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            return view('medecin.dashboard', compact('stats', 'appointments', 'recent_consultations'));
         }
 
         if ($user->isPatient()) {

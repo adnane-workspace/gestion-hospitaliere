@@ -65,12 +65,55 @@
         </div>
     </div>
 
-    <!-- Graphique (à brancher plus tard sur l'API) -->
+    <!-- Graphique -->
     <div class="card" style="min-height: 400px;">
         <h3 style="margin-bottom: 1.5rem;">📈 Activité Hebdomadaire</h3>
         <div style="height: 300px;">
             <canvas id="activityChart"></canvas>
         </div>
+    </div>
+</div>
+
+<!-- Mes Dernières Consultations -->
+<div class="card" style="margin-top: 2rem;">
+    <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+        📄 Mes Dernières Consultations
+    </h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Patient</th>
+                    <th>Diagnostic Principal</th>
+                    <th>Statut</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($recent_consultations as $consultation)
+                <tr>
+                    <td>{{ $consultation->created_at->format('d/m/Y H:i') }}</td>
+                    <td><strong>{{ $consultation->patient->user->name }}</strong></td>
+                    <td>{{ Str::limit($consultation->diagnostic_principal, 50) }}</td>
+                    <td>
+                        <span class="badge {{ $consultation->statut === 'Terminé' ? 'badge-success' : 'badge-warning' }}">
+                            {{ $consultation->statut }}
+                        </span>
+                    </td>
+                    <td style="text-align: right;">
+                        <a href="#" class="badge" style="background: var(--primary-light); color: var(--primary); text-decoration:none;">Détails</a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 2rem; color: var(--secondary);">
+                        Aucune consultation enregistrée.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
