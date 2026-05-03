@@ -105,25 +105,6 @@
                         @endif
                     </div>
 
-                    <!-- Remember Me -->
-                    <div class="flex items-center px-1">
-                        <label for="remember_me" class="flex items-center cursor-pointer group">
-                            <div class="relative">
-                                <input id="remember_me" type="checkbox" name="remember" class="sr-only">
-                                <div class="w-5 h-5 bg-slate-100 border-2 border-slate-200 rounded-md group-hover:border-indigo-400 transition-all"></div>
-                                <div class="absolute inset-0 flex items-center justify-center opacity-0 check-mark transition-opacity">
-                                    <i data-lucide="check" class="w-3.5 h-3.5 text-indigo-600 stroke-[4]"></i>
-                                </div>
-                            </div>
-                            <span class="ms-3 text-sm text-slate-500 font-semibold select-none">Rester connecté</span>
-                        </label>
-                    </div>
-
-                    <style>
-                        input:checked + div + .check-mark { opacity: 1; }
-                        input:checked + div { background-color: #eef2ff; border-color: #4f46e5; }
-                    </style>
-
                     <!-- Login Button -->
                     <div class="pt-4">
                         <button type="submit" class="w-full py-5 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-200 transition-all transform hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center gap-3">
@@ -133,10 +114,7 @@
                     </div>
                 </form>
 
-                <!-- Footer -->
-                <p class="mt-12 text-center text-slate-400 text-sm font-medium">
-                    Besoin d'un compte ? <a href="#" class="text-indigo-600 font-bold hover:underline">Contacter l'administrateur</a>
-                </p>
+                
             </div>
         </div>
     </div>
