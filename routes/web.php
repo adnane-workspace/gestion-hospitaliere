@@ -38,7 +38,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- ESPACE PATIENT ---
     Route::middleware('auth.role:patient')->group(function () {
         Route::get('/patient/dashboard', [DashboardController::class, 'index'])->name('patient.dashboard');
-        // Autres routes patient ici...
+        Route::get('/patient/profile', [PatientController::class, 'myProfile'])->name('patient.profile');
+        Route::get('/patient/rendezvous', [App\Http\Controllers\RendezVousController::class, 'index'])->name('patient.rendezvous.index');
+        Route::get('/patient/rendezvous/nouveau', [App\Http\Controllers\RendezVousController::class, 'create'])->name('patient.rendezvous.create');
+        Route::post('/patient/rendezvous', [App\Http\Controllers\RendezVousController::class, 'store'])->name('patient.rendezvous.store');
     });
 
     // --- GESTION PATIENTS ---

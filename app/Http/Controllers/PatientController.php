@@ -36,6 +36,20 @@ class PatientController extends Controller
     }
 
     /**
+     * Display the authenticated patient's profile.
+     */
+    public function myProfile()
+    {
+        $patient = Auth::user()->patient;
+        
+        if (!$patient) {
+            return redirect()->route('dashboard')->with('error', 'Profil patient non trouvé.');
+        }
+
+        return $this->show($patient);
+    }
+
+    /**
      * Display the specified patient.
      */
     public function show(Patient $patient)

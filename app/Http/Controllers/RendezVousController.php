@@ -17,26 +17,66 @@ class RendezVousController extends Controller
     }
 
     /**
+     * Display a listing of the patient's appointments.
+     */
+    public function index()
+    {
+        $patient = \Illuminate\Support\Facades\Auth::user()->patient;
+
+        if (!$patient) {
+            return redirect()->route('dashboard')->with('error', 'Profil patient non trouvé.');
+        }
+
+        $appointments = \App\Models\RendezVous::with('medecin.user')
+            ->where('patient_id', $patient->id)
+            ->orderBy('date_heure_debut', 'desc')
+            ->paginate(10);
+
+        return view('patient.rendezvous.index', compact('appointments'));
+    }
+
+    /**
+     * Show the form for creating a new appointment.
+     */
+    public function create()
+    {
+        $medecins = \App\Models\Medecin::with('user', 'service')->get();
+        $services = \App\Models\Service::all();
+        return view('patient.rendezvous.create', compact('medecins', 'services'));
+    }
+
+    /**
      * Store a newly created appointment.
      */
-    public function store(StoreRendezVousRequest $request): JsonResponse
+    public function store(\Illuminate\Http\Request $request)
     {
-        try {
-            // On délègue toute la logique complexe au Service
-            $rendezVous = $this->rendezVousService->reserver($request->validated());
+        $validated = $request->validate([
+            'medecin_id' => 'required|exists:medecins,id',
+            'date_heure_debut' => 'required|date|after:now',
+            'motif' => 'nullable|string|max:255',
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Rendez-vous réservé avec succès.',
-                'data' => $rendezVous
-            ], 201);
+        $patient = \Illuminate\Support\Facades\Auth::user()->patient;
 
-        } catch (Exception $e) {
-            // En cas de conflit (médecin occupé) ou autre erreur métier
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+        if (!$patient) {
+            return back()->with('error', 'Profil patient non trouvé.');
         }
+
+        // Génération d'une référence unique
+        $reference = 'RDV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
+
+        \App\Models\RendezVous::create([
+            'reference' => $reference,
+            'patient_id' => $patient->id,
+            'medecin_id' => $validated['medecin_id'],
+            'date_heure_debut' => $validated['date_heure_debut'],
+            'date_heure_fin' => \Carbon\Carbon::parse($validated['date_heure_debut'])->addMinutes(30),
+            'motif' => $validated['motif'] ?? 'Consultation',
+            'statut' => 'planifie',
+            'type_rendez_vous' => 'premiere_consultation',
+            'canal_prise_rdv' => 'en_ligne',
+        ]);
+
+        return redirect()->route('patient.dashboard')->with('success', "Votre rendez-vous a été enregistré. Référence : $reference");
     }
 }
