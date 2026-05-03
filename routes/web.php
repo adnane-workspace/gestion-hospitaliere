@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,37 +18,24 @@ Route::get('/', function () {
 // --- ROUTES AUTHENTIFIÉES ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Redirection intelligente après login (Dashboard par défaut)
-    Route::get('/dashboard', function () {
-        $user = auth()->user();
-        if ($user->isMedecin()) return redirect()->route('medecin.dashboard');
-        if ($user->isPatient()) return redirect()->route('patient.dashboard');
-        return redirect()->route('admin.dashboard');
-    })->name('dashboard');
+    // Point d'entrée unique qui utilise la logique du DashboardController
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // --- ESPACE ADMIN ---
     Route::middleware('auth.role:admin')->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     });
 
     // --- ESPACE MEDECIN ---
     Route::middleware('auth.role:medecin')->group(function () {
-        Route::get('/medecin/dashboard', function () {
-            return view('medecin.dashboard');
-        })->name('medecin.dashboard');
-        
-        // Modules consultations, ordonnances, etc.
+        Route::get('/medecin/dashboard', [DashboardController::class, 'index'])->name('medecin.dashboard');
+        // Autres routes médecin ici...
     });
 
     // --- ESPACE PATIENT ---
     Route::middleware('auth.role:patient')->group(function () {
-        Route::get('/patient/dashboard', function () {
-            return view('patient.dashboard');
-        })->name('patient.dashboard');
-        
-        // Modules prise de RDV, mon dossier, etc.
+        Route::get('/patient/dashboard', [DashboardController::class, 'index'])->name('patient.dashboard');
+        // Autres routes patient ici...
     });
 
     // --- GESTION PROFIL ---

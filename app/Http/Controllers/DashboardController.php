@@ -2,82 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RendezVous;
 use App\Models\Consultation;
-use App\Models\Facture;
-use App\Models\Service;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
+use App\Models\Patient;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function getStats(): JsonResponse
+    public function index()
     {
-        $currentYear = Carbon::now()->year;
+        $user = Auth::user();
 
-        // 1. Consultations par mois (Année en cours)
-        // On initialise un tableau avec tous les mois à zéro pour Chart.js
-        $months = collect(range(1, 12))->mapWithKeys(function ($month) {
-            return [date('F', mktime(0, 0, 0, $month, 1)) => 0];
-        });
+        if ($user->isAdmin()) {
+            return view('admin.dashboard');
+        }
 
-        $consultationsPerMonth = Consultation::select(
-                DB::raw('MONTH(date_heure) as month'),
-                DB::raw('COUNT(*) as total')
-            )
-            ->whereYear('date_heure', $currentYear)
-            ->groupBy('month')
-            ->orderBy('month')
-            ->get()
-            ->mapWithKeys(function ($item) {
-                return [date('F', mktime(0, 0, 0, $item->month, 1)) => $item->total];
-            });
+        if ($user->isMedecin()) {
+            $medecin = $user->medecin;
 
-        $chartConsultations = $months->merge($consultationsPerMonth);
+            if (!$medecin) {
+                return "Profil médecin non trouvé pour cet utilisateur.";
+            }
 
-        // 2. Chiffre d'affaires total
-        $totalRevenue = Facture::where('statut', 'payee')
-            ->sum('montant_total_ttc');
+            $stats = [
+                'rdv_today' => RendezVous::where('medecin_id', $medecin->id)
+                    ->whereDate('date_heure_debut', Carbon::today())
+                    ->count(),
+                'consultations_done' => Consultation::where('medecin_id', $medecin->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->count(),
+                'new_patients' => Patient::whereMonth('created_at', Carbon::now()->month)->count(),
+            ];
 
-        // 3. Top 5 des services les plus sollicités
-        $topServices = Service::withCount('rendezvous')
-            ->orderBy('rendezvous_count', 'desc')
-            ->take(5)
-            ->get();
+            $appointments = RendezVous::with('patient.user')
+                ->where('medecin_id', $medecin->id)
+                ->whereDate('date_heure_debut', Carbon::today())
+                ->orderBy('date_heure_debut', 'asc')
+                ->get();
 
-        // 4. Structure JSON pour Chart.js
-        return response()->json([
-            'summary' => [
-                'total_revenue' => number_format($totalRevenue, 2, '.', ''),
-                'currency' => 'MAD',
-                'year' => $currentYear
-            ],
-            'charts' => [
-                'consultations' => [
-                    'labels' => $chartConsultations->keys(),
-                    'datasets' => [
-                        [
-                            'label' => 'Consultations ' . $currentYear,
-                            'data' => $chartConsultations->values(),
-                            'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-                            'borderColor' => 'rgba(54, 162, 235, 1)',
-                            'borderWidth' => 2
-                        ]
-                    ]
-                ],
-                'top_services' => [
-                    'labels' => $topServices->pluck('nom'),
-                    'datasets' => [
-                        [
-                            'label' => 'Nombre de RDV',
-                            'data' => $topServices->pluck('rendezvous_count'),
-                            'backgroundColor' => [
-                                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
-                            ]
-                        ]
-                    ]
-                ]
-            ]
-        ]);
+            return view('medecin.dashboard', compact('stats', 'appointments'));
+        }
+
+        if ($user->isPatient()) {
+            return view('patient.dashboard');
+        }
+
+        return redirect('/');
     }
 }

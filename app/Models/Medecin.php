@@ -5,36 +5,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Medecin extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'service_id',
-        'matricule',
-        'nom',
-        'prenom',
-        'specialite',
-        'email',
-        'telephone',
-        'statut'
-    ];
+    protected $guarded = [];
 
     /**
-     * Un médecin appartient à un service.
+     * Get the user that owns the doctor profile.
      */
-    public function service(): BelongsTo
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function service()
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Un médecin a plusieurs rendez-vous.
-     */
-    public function rendezvous(): HasMany
+    public function rendezvous()
     {
         return $this->hasMany(RendezVous::class);
     }

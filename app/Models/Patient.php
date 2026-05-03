@@ -5,26 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Patient extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'numero_dossier',
-        'nom',
-        'prenom',
-        'genre',
-        'date_naissance',
-        'telephone',
-        'email'
-    ];
+    protected $guarded = [];
 
     /**
-     * Un patient a plusieurs rendez-vous.
+     * Get the user that owns the patient profile.
      */
-    public function rendezvous(): HasMany
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function rendezvous()
     {
         return $this->hasMany(RendezVous::class);
     }

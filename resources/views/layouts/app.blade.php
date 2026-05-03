@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,8 +23,19 @@
             --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
 
         /* Sidebar */
         .sidebar {
@@ -33,43 +45,136 @@
             border-right: 1px solid #e2e8f0;
             padding: 2rem 1.5rem;
             position: fixed;
-            left: 0; top: 0;
+            left: 0;
+            top: 0;
             z-index: 50;
         }
-        .logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); margin-bottom: 3rem; display: flex; align-items: center; gap: 0.5rem; }
-        .nav-links { list-style: none; }
-        .nav-item { margin-bottom: 0.5rem; }
-        .nav-link {
-            display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1rem;
-            text-decoration: none; color: var(--secondary); border-radius: 0.5rem;
-            transition: all 0.3s ease; font-weight: 500;
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--secondary);
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
 
         /* Main Content */
-        .main-content { 
-            margin-left: 260px; 
-            width: calc(100% - 260px); 
-            padding: 3rem 4rem; 
-            flex-grow: 1; 
+        .main-content {
+            margin-left: 260px;
+            width: calc(100% - 260px);
+            padding: 3rem 4rem;
+            flex-grow: 1;
             min-height: 100vh;
         }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .header h1 { font-size: 1.875rem; font-weight: 700; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
 
         /* Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
-        .card { background: white; padding: 1.5rem; border-radius: 1rem; border: 1px solid #f1f5f9; box-shadow: var(--card-shadow); }
-        .stat-value { font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem; }
-        .stat-label { color: var(--secondary); font-size: 0.875rem; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: var(--card-shadow);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
 
         /* Tables */
-        .table-container { background: white; border-radius: 1rem; overflow: hidden; border: 1px solid #f1f5f9; box-shadow: var(--card-shadow); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 1rem; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--secondary); }
-        td { padding: 1rem; border-top: 1px solid #f1f5f9; font-size: 0.875rem; }
-        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
-        .badge-success { background: #dcfce7; color: #166534; }
+        .table-container {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+            box-shadow: var(--card-shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary);
+        }
+
+        td {
+            padding: 1rem;
+            border-top: 1px solid #f1f5f9;
+            font-size: 0.875rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
 
         .logout-btn {
             margin-top: auto;
@@ -83,16 +188,20 @@
         }
     </style>
 </head>
+
 <body>
     <div class="sidebar">
-        <div class="logo">🏥 HospitManage</div>
+        <div class="logo" style="margin-bottom: 3rem; display: flex; justify-content: center; width: 100%;">
+            <x-application-logo style="height: 80px; width: auto; max-width: 100%;" />
+        </div>
         <ul class="nav-links">
             <li class="nav-item">
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') || request()->routeIs('*.dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') || request()->routeIs('*.dashboard') ? 'active' : '' }}">
                     🏠 Tableau de bord
                 </a>
             </li>
-            
+
             @if(auth()->user()->isMedecin())
                 <li class="nav-item"><a href="#" class="nav-link">📅 Mes Consultations</a></li>
                 <li class="nav-item"><a href="/patients" class="nav-link">👥 Mes Patients</a></li>
@@ -112,18 +221,16 @@
 
         <form method="POST" action="{{ route('logout') }}" style="margin-top: 20px;">
             @csrf
-            <a href="{{ route('logout') }}" class="logout-btn" onclick="event.preventDefault(); this.closest('form').submit();">
+            <a href="{{ route('logout') }}" class="logout-btn"
+                onclick="event.preventDefault(); this.closest('form').submit();">
                 Déconnexion
             </a>
         </form>
     </div>
 
     <div class="main-content">
-        <!-- Support pour @yield('content') ET {{ $slot ?? '' }} -->
         @yield('content')
-        @if(isset($slot))
-            {{ $slot }}
-        @endif
     </div>
 </body>
+
 </html>
