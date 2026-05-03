@@ -36,6 +36,25 @@ class RendezVousController extends Controller
     }
 
     /**
+     * Display a listing of the doctor's appointments.
+     */
+    public function medecinIndex()
+    {
+        $medecin = \Illuminate\Support\Facades\Auth::user()->medecin;
+
+        if (!$medecin) {
+            return redirect()->route('dashboard')->with('error', 'Profil médecin non trouvé.');
+        }
+
+        $appointments = \App\Models\RendezVous::with('patient.user')
+            ->where('medecin_id', $medecin->id)
+            ->orderBy('date_heure_debut', 'desc')
+            ->paginate(15);
+
+        return view('medecin.rendezvous.index', compact('appointments'));
+    }
+
+    /**
      * Show the form for creating a new appointment.
      */
     public function create()

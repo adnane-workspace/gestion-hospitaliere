@@ -3,60 +3,82 @@
 @section('title', 'Mes Consultations')
 
 @section('content')
-<div class="header" style="margin-bottom: 2rem;">
-    <div>
-        <h1 style="font-size: 2rem;">Mes Consultations</h1>
-        <p style="color: var(--secondary);">Historique complet de vos actes médicaux.</p>
-    </div>
+<div class="mb-12">
+    <h1 class="text-4xl font-bold text-slate-800 tracking-tight mb-2">Historique des Consultations</h1>
+    <p class="text-slate-500 font-medium">Consultez l'ensemble de vos actes médicaux passés.</p>
 </div>
 
-<div class="card">
-    <div class="table-container">
-        <table>
+<div class="bg-white rounded-4xl border border-slate-200/60 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
             <thead>
-                <tr>
-                    <th>Date & Heure</th>
-                    <th>Patient</th>
-                    <th>Service</th>
-                    <th>Diagnostic Principal</th>
-                    <th>Statut</th>
-                    <th style="text-align: right;">Actions</th>
+                <tr class="bg-slate-50/50 border-b border-slate-100">
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date & Heure</th>
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Patient</th>
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Service</th>
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Diagnostic Principal</th>
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Statut</th>
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-slate-100">
                 @forelse($consultations as $consultation)
-                <tr>
-                    <td>{{ $consultation->created_at->format('d/m/Y H:i') }}</td>
-                    <td>
-                        <strong>{{ $consultation->patient->user->name }}</strong><br>
-                        <small style="color: var(--secondary);">{{ $consultation->patient->telephone }}</small>
+                <tr class="hover:bg-indigo-50/30 transition-all group">
+                    <td class="px-8 py-6">
+                        <div class="text-sm font-bold text-slate-700">{{ $consultation->created_at->format('d/m/Y') }}</div>
+                        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{{ $consultation->created_at->format('H:i') }}</div>
                     </td>
-                    <td>{{ $consultation->service->nom ?? 'N/A' }}</td>
-                    <td>{{ Str::limit($consultation->diagnostic_principal, 60) }}</td>
-                    <td>
-                        <span class="badge {{ $consultation->statut === 'Terminé' ? 'badge-success' : 'badge-warning' }}">
+                    <td class="px-8 py-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                {{ substr($consultation->patient->user->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">{{ $consultation->patient->user->name }}</p>
+                                <p class="text-[11px] font-medium text-slate-400">{{ $consultation->patient->telephone }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                            {{ $consultation->service->nom ?? 'Général' }}
+                        </span>
+                    </td>
+                    <td class="px-8 py-6 text-sm text-slate-500 font-medium italic">
+                        "{{ Str::limit($consultation->diagnostic_principal, 60) }}"
+                    </td>
+                    <td class="px-8 py-6">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $consultation->statut === 'Terminé' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">
                             {{ $consultation->statut }}
                         </span>
                     </td>
-                    <td style="text-align: right;">
-                        <div style="display: flex; gap: 5px; justify-content: flex-end;">
-                            <a href="#" class="badge" style="background: var(--primary-light); color: var(--primary); text-decoration:none;">Voir</a>
-                            <a href="#" class="badge" style="background: #f1f5f9; color: var(--text-main); text-decoration:none;">Modifier</a>
+                    <td class="px-8 py-6">
+                        <div class="flex justify-end gap-2">
+                            <button class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                            <button class="p-2.5 bg-slate-50 text-slate-400 rounded-xl hover:bg-slate-800 hover:text-white transition-all shadow-sm">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--secondary);">
-                        Aucune consultation trouvée.
+                    <td colspan="6" class="px-8 py-32 text-center text-slate-400">
+                        <i data-lucide="search-x" class="w-16 h-16 mx-auto mb-4 opacity-20"></i>
+                        <p class="text-xl font-bold">Aucune consultation enregistrée</p>
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
-    <div style="margin-top: 1.5rem;">
+    
+    @if($consultations->hasPages())
+    <div class="px-8 py-6 border-t border-slate-100 bg-slate-50/30">
         {{ $consultations->links() }}
     </div>
+    @endif
 </div>
 @endsection

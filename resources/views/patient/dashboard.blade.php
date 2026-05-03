@@ -1,159 +1,160 @@
 @extends('layouts.app')
 
-@section('title', 'Mon Espace Santé')
+@section('title', 'Tableau de bord')
 
 @section('content')
-<div class="header">
-    <div>
-        <h1 style="color: white; margin-bottom: 0.5rem;">Bienvenue, {{ Auth::user()->name }}</h1>
-        <p style="color: rgba(255,255,255,0.7); font-size: 1.1rem;">Ravi de vous revoir. Prenez soin de votre santé aujourd'hui.</p>
-    </div>
-    <a href="{{ route('patient.rendezvous.create') }}" class="btn-primary">
-        <i data-lucide="calendar-plus"></i> Prendre un Rendez-vous
-    </a>
+<div class="mb-12">
+    <h1 class="text-4xl font-bold text-slate-800 tracking-tight mb-2">Bonjour, {{ Auth::user()->name }} 👋</h1>
+    <p class="text-slate-500 font-medium">Voici un aperçu de votre santé et de vos prochains rendez-vous.</p>
 </div>
 
-<div class="stats-grid">
-    <!-- Prochain RDV Card -->
-    <div class="stat-card" style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <div class="stat-label">Prochain Rendez-vous</div>
-                @if($nextAppointment)
-                    <div class="stat-value">{{ $nextAppointment->date_heure_debut->format('d M Y') }}</div>
-                    <div style="margin-top: 0.5rem; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; opacity: 0.9;">
-                        <i data-lucide="clock" style="width: 16px;"></i> {{ $nextAppointment->date_heure_debut->format('H:i') }}
-                    </div>
-                @else
-                    <div class="stat-value" style="font-size: 1.25rem; opacity: 0.7;">Aucun RDV prévu</div>
-                @endif
-            </div>
-            <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 16px;">
-                <i data-lucide="calendar"></i>
-            </div>
-        </div>
-        @if($nextAppointment)
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem;">
-                Avec <strong>Dr. {{ $nextAppointment->medecin->user->name }}</strong>
-            </div>
-        @endif
-    </div>
-
-    <!-- Dernière Consultation -->
-    <div class="stat-card" style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <div class="stat-label">Dernière Consultation</div>
-                <div class="stat-value">
-                    {{ $history->first() ? $history->first()->created_at->format('d M Y') : '---' }}
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+    <!-- Prochain RDV -->
+    <div class="relative group">
+        <div class="absolute inset-0 bg-indigo-600 rounded-3xl blur-xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
+        <div class="relative bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm overflow-hidden h-full flex flex-col">
+            <div class="flex justify-between items-start mb-6">
+                <div class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600">
+                    <i data-lucide="calendar" class="w-7 h-7"></i>
                 </div>
+                <span class="px-3 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Prochain RDV</span>
             </div>
-            <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 16px;">
-                <i data-lucide="history"></i>
-            </div>
-        </div>
-        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem;">
-            {{ $history->first() ? 'Service : ' . ($history->first()->service->nom ?? 'Général') : 'Aucun historique' }}
+            
+            @if($nextAppointment)
+                <h3 class="text-2xl font-bold text-slate-800 mb-1">{{ $nextAppointment->date_heure_debut->format('d M Y') }}</h3>
+                <p class="text-slate-500 font-medium mb-6">À {{ $nextAppointment->date_heure_debut->format('H:i') }} avec Dr. {{ $nextAppointment->medecin->user->name }}</p>
+                <div class="mt-auto">
+                    <a href="{{ route('patient.rendezvous.index') }}" class="text-indigo-600 font-bold text-sm flex items-center gap-2 group-hover:gap-3 transition-all">
+                        Gérer mes RDV <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            @else
+                <h3 class="text-xl font-bold text-slate-400 mb-6 italic">Aucun rendez-vous prévu</h3>
+                <div class="mt-auto">
+                    <a href="{{ route('patient.rendezvous.create') }}" class="inline-flex items-center justify-center w-full py-3 bg-indigo-600 text-white font-bold rounded-2xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-colors gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Prendre RDV
+                    </a>
+                </div>
+            @endif
         </div>
     </div>
 
     <!-- Groupe Sanguin -->
-    <div class="stat-card" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-            <div>
-                <div class="stat-label">Groupe Sanguin</div>
-                <div class="stat-value" style="font-size: 2.5rem;">{{ $patient->groupe_sanguin ?? '??' }}</div>
+    <div class="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col">
+        <div class="flex justify-between items-start mb-6">
+            <div class="w-14 h-14 bg-rose-50 rounded-2xl flex items-center justify-center text-rose-500">
+                <i data-lucide="droplet" class="w-7 h-7"></i>
             </div>
-            <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 16px;">
-                <i data-lucide="droplet"></i>
+            <span class="px-3 py-1 bg-rose-50 text-rose-500 text-[10px] font-bold uppercase tracking-widest rounded-full">Vital</span>
+        </div>
+        <p class="text-slate-500 font-medium mb-1">Groupe Sanguin</p>
+        <h3 class="text-4xl font-black text-slate-800">{{ $patient->groupe_sanguin ?? 'Non défini' }}</h3>
+        <div class="mt-auto pt-6">
+            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="w-full h-full bg-rose-500"></div>
             </div>
         </div>
-        <div style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">Information vitale</div>
+    </div>
+
+    <!-- Santé Score (Mockup) -->
+    <div class="bg-white p-8 rounded-3xl border border-slate-200/60 shadow-sm flex flex-col">
+        <div class="flex justify-between items-start mb-6">
+            <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500">
+                <i data-lucide="activity" class="w-7 h-7"></i>
+            </div>
+            <span class="px-3 py-1 bg-emerald-50 text-emerald-500 text-[10px] font-bold uppercase tracking-widest rounded-full">État</span>
+        </div>
+        <p class="text-slate-500 font-medium mb-1">Score de Santé</p>
+        <h3 class="text-4xl font-black text-slate-800">92<span class="text-xl text-slate-400 font-bold">/100</span></h3>
+        <div class="mt-auto pt-6 text-emerald-500 text-xs font-bold flex items-center gap-1">
+            <i data-lucide="trending-up" class="w-3 h-3"></i> +5% depuis le mois dernier
+        </div>
     </div>
 </div>
 
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
-    <!-- Historique -->
-    <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h3 style="font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 10px;">
-                <i data-lucide="file-text" style="color: var(--primary);"></i> Mon Historique Médical
-            </h3>
-            <a href="#" style="color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 600;">Voir tout</a>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Historique Médical -->
+    <div class="lg:col-span-2 bg-white rounded-4xl border border-slate-200/60 shadow-sm overflow-hidden">
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-slate-800">Historique Médical</h3>
+            <a href="#" class="text-indigo-600 font-bold text-sm hover:underline">Voir tout</a>
         </div>
-        
-        <div class="table-container" style="box-shadow: none; border: 1px solid #f1f5f9;">
-            <table>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Médecin</th>
-                        <th>Service</th>
-                        <th>Diagnostic</th>
-                        <th>Action</th>
+                    <tr class="bg-slate-50/50">
+                        <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date</th>
+                        <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Médecin</th>
+                        <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Diagnostic</th>
+                        <th class="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-slate-100 text-sm">
                     @forelse($history as $item)
-                    <tr>
-                        <td style="font-weight: 600;">{{ $item->created_at->format('d/m/Y') }}</td>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <div style="width: 32px; height: 32px; background: #f1f5f9; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; color: var(--primary);">
-                                    {{ substr($item->medecin->user->name, 0, 1) }}
+                        <tr class="hover:bg-indigo-50/30 transition-colors group">
+                            <td class="px-8 py-5 font-bold text-slate-700">{{ $item->created_at->format('d/m/Y') }}</td>
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                                        {{ substr($item->medecin->user->name, 0, 1) }}
+                                    </div>
+                                    <span class="font-semibold text-slate-600">Dr. {{ $item->medecin->user->name }}</span>
                                 </div>
-                                Dr. {{ $item->medecin->user->name }}
-                            </div>
-                        </td>
-                        <td><span class="badge badge-primary">{{ $item->service->nom ?? 'Général' }}</span></td>
-                        <td style="color: #64748b;">{{ Str::limit($item->diagnostic_principal, 30) }}</td>
-                        <td>
-                            <button style="background: none; border: none; color: var(--primary); cursor: pointer;">
-                                <i data-lucide="eye" style="width: 18px;"></i>
-                            </button>
-                        </td>
-                    </tr>
+                            </td>
+                            <td class="px-8 py-5 text-slate-500 font-medium">{{ Str::limit($item->diagnostic_principal, 30) }}</td>
+                            <td class="px-8 py-5">
+                                <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 3rem; color: #94a3b8;">
-                            <i data-lucide="folder-open" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
-                            <p>Aucun historique médical disponible.</p>
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="4" class="px-8 py-20 text-center">
+                                <div class="flex flex-col items-center opacity-20">
+                                    <i data-lucide="folder-open" class="w-16 h-16 mb-4"></i>
+                                    <p class="font-bold">Aucun historique trouvé</p>
+                                </div>
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Quick Actions / Info -->
-    <div style="display: flex; flex-direction: column; gap: 2rem;">
-        <div class="card" style="background: var(--primary); color: white;">
-            <h4 style="margin-bottom: 1rem;">Besoin d'aide ?</h4>
-            <p style="font-size: 0.875rem; opacity: 0.9; margin-bottom: 1.5rem;">Notre équipe médicale est disponible 24/7 pour vos urgences.</p>
-            <a href="tel:0500000000" class="btn-primary" style="background: white; color: var(--primary); width: 100%; justify-content: center;">
-                <i data-lucide="phone-call"></i> Appeler l'Hôpital
+    <!-- Documents & Sidebar Actions -->
+    <div class="space-y-8">
+        <div class="bg-indigo-600 rounded-4xl p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-200">
+            <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+            <h3 class="text-xl font-bold mb-2">Besoin d'aide ?</h3>
+            <p class="text-indigo-100 text-sm mb-8 leading-relaxed">Consultez notre FAQ ou contactez directement le secrétariat pour toute urgence.</p>
+            <a href="#" class="inline-flex items-center justify-center px-6 py-3 bg-white text-indigo-600 font-bold rounded-2xl shadow-lg transition-transform hover:scale-105">
+                Nous Contacter
             </a>
         </div>
 
-        <div class="card">
-            <h4 style="margin-bottom: 1rem;">Mes Documents</h4>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px;">
-                    <i data-lucide="file-plus" style="color: var(--danger);"></i>
-                    <div style="flex-grow: 1;">
-                        <div style="font-size: 0.875rem; font-weight: 600;">Dernière Ordonnance</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">PDF - 1.2 MB</div>
+        <div class="bg-white rounded-4xl border border-slate-200/60 p-8 shadow-sm">
+            <h3 class="text-xl font-bold text-slate-800 mb-6">Documents Récents</h3>
+            <div class="space-y-4">
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 group hover:bg-indigo-50 transition-colors cursor-pointer">
+                    <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                        <i data-lucide="file-text" class="w-6 h-6"></i>
                     </div>
-                    <i data-lucide="download" style="width: 16px; color: #94a3b8; cursor: pointer;"></i>
+                    <div>
+                        <p class="text-sm font-bold text-slate-700">Ordonnance_0405.pdf</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">PDF • 1.2 MB</p>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f8fafc; border-radius: 12px;">
-                    <i data-lucide="file-text" style="color: var(--primary);"></i>
-                    <div style="flex-grow: 1;">
-                        <div style="font-size: 0.875rem; font-weight: 600;">Résultats Analyse</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">PDF - 0.8 MB</div>
+                <div class="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 group hover:bg-indigo-50 transition-colors cursor-pointer">
+                    <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                        <i data-lucide="image" class="w-6 h-6"></i>
                     </div>
-                    <i data-lucide="download" style="width: 16px; color: #94a3b8; cursor: pointer;"></i>
+                    <div>
+                        <p class="text-sm font-bold text-slate-700">Radio_Poumons.jpg</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">JPG • 4.5 MB</p>
+                    </div>
                 </div>
             </div>
         </div>

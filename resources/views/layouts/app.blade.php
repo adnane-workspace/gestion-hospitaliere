@@ -8,343 +8,173 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                        '5xl': '2.5rem',
+                    },
+                    boxShadow: {
+                        'premium': '0 20px 50px -12px rgba(79, 70, 229, 0.12)',
+                        'glow': '0 0 20px rgba(79, 70, 229, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --primary-light: #eef2ff;
-            --secondary: #64748b;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg-body: #f1f5f9;
-            --bg-sidebar: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --glass-bg: rgba(255, 255, 255, 0.8);
-            --glass-border: rgba(255, 255, 255, 0.2);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: all 0.2s ease-in-out;
-        }
-
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: var(--bg-body);
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
-                              radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
-                              radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            background-attachment: fixed;
-            background-size: cover;
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Glassmorphism */
-        .sidebar {
-            width: 280px;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            height: 100vh;
-            border-right: 1px solid var(--glass-border);
-            padding: 2.5rem 1.5rem;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .logo {
-            padding: 0 1rem;
-            margin-bottom: 3.5rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .nav-links {
-            list-style: none;
-            flex-grow: 1;
-        }
-
-        .nav-item {
-            margin-bottom: 0.75rem;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0.875rem 1.25rem;
-            text-decoration: none;
-            color: #475569;
-            border-radius: 12px;
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        .nav-link i {
-            width: 20px;
-            height: 20px;
-        }
-
-        .nav-link:hover {
-            background: rgba(79, 70, 229, 0.08);
-            color: var(--primary);
-            transform: translateX(5px);
-        }
-
-        .nav-link.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            width: calc(100% - 280px);
-            padding: 3rem 4rem;
-            flex-grow: 1;
-            min-height: 100vh;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 3rem;
-            color: white;
-        }
-
-        .header h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            letter-spacing: -0.025em;
-        }
-
-        /* Cards & Glassmorphism */
-        .card {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 2rem;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 1.75rem;
-            border-radius: 24px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        .stat-value {
-            font-size: 1.875rem;
-            font-weight: 700;
-            margin-top: 0.5rem;
-        }
-
-        .stat-label {
-            opacity: 0.8;
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Tables */
-        .table-container {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th {
-            background: #f8fafc;
-            padding: 1.25rem 1.5rem;
-            text-align: left;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: #64748b;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        td {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
-            font-size: 0.9375rem;
-            color: #334155;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: #fbfcfe;
-        }
-
-        /* Badges */
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.375rem 1rem;
-            border-radius: 12px;
-            font-size: 0.8125rem;
-            font-weight: 600;
-        }
-
-        .badge-success { background: #ecfdf5; color: #059669; }
-        .badge-primary { background: #eef2ff; color: #4f46e5; }
-        .badge-danger { background: #fef2f2; color: #dc2626; }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.875rem 1.75rem;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 0.9375rem;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
-        }
-
-        .logout-btn {
-            margin-top: auto;
-            padding: 0.875rem 1.25rem;
-            color: #ef4444;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            border-radius: 12px;
-        }
-
-        .logout-btn:hover {
-            background: #fef2f2;
-        }
-    </style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
-<body>
-    <div class="sidebar">
-        <div class="logo">
-            <div style="background: var(--primary); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
-                <i data-lucide="activity"></i>
+<body class="font-sans antialiased bg-slate-50 text-slate-900 overflow-x-hidden min-h-screen flex" x-data="{ sidebarOpen: true }">
+    <!-- Background Elements -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px]"></div>
+        <div class="absolute top-[20%] -right-[10%] w-[30%] h-[50%] rounded-full bg-blue-600/5 blur-[100px]"></div>
+        <div class="absolute -bottom-[10%] left-[20%] w-[50%] h-[30%] rounded-full bg-purple-600/10 blur-[120px]"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside 
+        class="fixed left-0 top-0 h-screen bg-white/80 backdrop-blur-xl border-r border-slate-200/50 transition-all duration-500 z-50 flex flex-col p-6 shadow-2xl shadow-indigo-100/50"
+        :class="sidebarOpen ? 'w-72' : 'w-24'"
+    >
+        <!-- Logo -->
+        <div class="flex items-center gap-4 px-2 mb-10 overflow-hidden whitespace-nowrap">
+            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-tr from-indigo-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200">
+                <i data-lucide="activity" class="w-6 h-6"></i>
             </div>
-            <span style="font-size: 1.25rem; font-weight: 700; color: var(--text-main);">Hospit<span style="color: var(--primary);">Manage</span></span>
+            <span class="text-xl font-bold tracking-tight text-slate-800" x-show="sidebarOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
+                Hospit<span class="text-indigo-600">Manage</span>
+            </span>
         </div>
-        <ul class="nav-links">
-            <li class="nav-item">
-                <a href="{{ route('dashboard') }}"
-                    class="nav-link {{ request()->routeIs('dashboard') || request()->routeIs('*.dashboard') ? 'active' : '' }}">
-                    <i data-lucide="layout-dashboard"></i> Tableau de bord
-                </a>
-            </li>
+
+        <!-- Nav -->
+        <nav class="flex-grow space-y-1.5">
+            <a href="{{ route('dashboard') }}" 
+               class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('dashboard') ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-200' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 flex-shrink-0"></i>
+                <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Tableau de bord</span>
+            </a>
 
             @if(auth()->user()->isMedecin())
-                <li class="nav-item">
-                    <a href="{{ route('medecin.consultations') }}" class="nav-link {{ request()->routeIs('medecin.consultations') ? 'active' : '' }}">
-                        <i data-lucide="clipboard-list"></i> Mes Consultations
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
-                        <i data-lucide="users"></i> Mes Patients
-                    </a>
-                </li>
+                <div class="pt-6 pb-2 px-4 uppercase text-[10px] font-bold tracking-widest text-slate-400" x-show="sidebarOpen">Médecin</div>
+                <a href="{{ route('medecin.rendezvous.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('medecin.rendezvous.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="calendar" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mes Rendez-vous</span>
+                </a>
+                <a href="{{ route('medecin.consultations') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('medecin.consultations') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="clipboard-list" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mes Consultations</span>
+                </a>
+                <a href="{{ route('patients.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('patients.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mes Patients</span>
+                </a>
             @endif
 
             @if(auth()->user()->isPatient())
-                <li class="nav-item">
-                    <a href="{{ route('patient.rendezvous.index') }}" class="nav-link {{ request()->routeIs('patient.rendezvous.index') ? 'active' : '' }}">
-                        <i data-lucide="calendar"></i> Mes Rendez-vous
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('patient.rendezvous.create') }}" class="nav-link {{ request()->routeIs('patient.rendezvous.create') ? 'active' : '' }}">
-                        <i data-lucide="calendar-plus"></i> Prendre RDV
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('patient.profile') }}" class="nav-link {{ request()->routeIs('patient.profile') ? 'active' : '' }}">
-                        <i data-lucide="folder-heart"></i> Mon Dossier
-                    </a>
-                </li>
+                <div class="pt-6 pb-2 px-4 uppercase text-[10px] font-bold tracking-widest text-slate-400" x-show="sidebarOpen">Espace Patient</div>
+                <a href="{{ route('patient.rendezvous.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('patient.rendezvous.index') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="calendar" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mes Rendez-vous</span>
+                </a>
+                <a href="{{ route('patient.rendezvous.create') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('patient.rendezvous.create') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="calendar-plus" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Prendre RDV</span>
+                </a>
+                <a href="{{ route('patient.profile') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('patient.profile') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="folder-heart" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mon Dossier</span>
+                </a>
             @endif
 
             @if(auth()->user()->isAdmin())
-                <li class="nav-item">
-                    <a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">
-                        <i data-lucide="users"></i> Gestion Patients
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i data-lucide="user-cog"></i> Gestion Médecins
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i data-lucide="banknote"></i> Comptabilité
-                    </a>
-                </li>
+                <div class="pt-6 pb-2 px-4 uppercase text-[10px] font-bold tracking-widest text-slate-400" x-show="sidebarOpen">Administration</div>
+                <a href="{{ route('patients.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('patients.index') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Gestion Patients</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group text-slate-500 hover:bg-indigo-50 hover:text-indigo-600">
+                    <i data-lucide="user-cog" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Gestion Médecins</span>
+                </a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group text-slate-500 hover:bg-indigo-50 hover:text-indigo-600">
+                    <i data-lucide="banknote" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Comptabilité</span>
+                </a>
             @endif
-        </ul>
+        </nav>
 
-        <form method="POST" action="{{ route('logout') }}" style="margin-top: 20px;">
-            @csrf
-            <a href="{{ route('logout') }}" class="logout-btn"
-                onclick="event.preventDefault(); this.closest('form').submit();">
-                <i data-lucide="log-out"></i> Déconnexion
-            </a>
-        </form>
-    </div>
+        <!-- Logout -->
+        <div class="pt-6 border-t border-slate-100">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-rose-500 hover:bg-rose-50 transition-all group overflow-hidden">
+                    <i data-lucide="log-out" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Déconnexion</span>
+                </button>
+            </form>
+        </div>
+    </aside>
 
-    <div class="main-content">
+    <!-- Content -->
+    <main class="flex-grow transition-all duration-500 py-10 px-12" :class="sidebarOpen ? 'ml-72' : 'ml-24'">
+        <!-- Topbar -->
+        <div class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-6">
+                <button @click="sidebarOpen = !sidebarOpen" class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200/60 text-slate-400 hover:text-indigo-600 hover:border-indigo-100 transition-all">
+                    <i data-lucide="menu" class="w-5 h-5" x-show="!sidebarOpen"></i>
+                    <i data-lucide="chevron-left" class="w-5 h-5" x-show="sidebarOpen"></i>
+                </button>
+                <div class="hidden md:block">
+                    <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-widest">Aujourd'hui</h2>
+                    <p class="text-lg font-bold text-slate-800">{{ now()->translatedFormat('l d F Y') }}</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <button class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200/60 text-slate-400 hover:text-indigo-600 transition-all relative">
+                    <i data-lucide="bell" class="w-5 h-5"></i>
+                    <span class="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                </button>
+
+                <div class="flex items-center gap-3 px-4 py-2 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-indigo-100">
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    </div>
+                    <div class="hidden lg:block text-left">
+                        <p class="text-sm font-bold text-slate-800 leading-none">{{ auth()->user()->name }}</p>
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase mt-1">{{ auth()->user()->role }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if(session('success'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="mb-8 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center gap-3 text-emerald-700 shadow-sm">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                <p class="font-semibold">{{ session('success') }}</p>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="mb-8 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-700 shadow-sm">
+                <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                <p class="font-semibold">{{ session('error') }}</p>
+            </div>
+        @endif
+
         @yield('content')
-    </div>
+    </main>
 
     <script>
         lucide.createIcons();

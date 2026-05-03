@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('auth.role:medecin')->group(function () {
         Route::get('/medecin/dashboard', [DashboardController::class, 'index'])->name('medecin.dashboard');
         Route::get('/medecin/consultations', [ConsultationController::class, 'index'])->name('medecin.consultations');
+        Route::get('/medecin/rendezvous', [App\Http\Controllers\RendezVousController::class, 'medecinIndex'])->name('medecin.rendezvous.index');
         // Autres routes médecin ici...
     });
 

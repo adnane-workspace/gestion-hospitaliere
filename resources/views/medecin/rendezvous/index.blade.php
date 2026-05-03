@@ -1,22 +1,17 @@
 @extends('layouts.app')
 
-@section('title', 'Mes Rendez-vous')
+@section('title', 'Gestion des Rendez-vous')
 
 @section('content')
-<div class="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-    <div>
-        <h1 class="text-4xl font-bold text-slate-800 tracking-tight mb-2">Mes Rendez-vous</h1>
-        <p class="text-slate-500 font-medium">Suivez l'état de vos demandes et gérez vos prochaines visites.</p>
-    </div>
-    <a href="{{ route('patient.rendezvous.create') }}" class="inline-flex items-center gap-2 px-6 py-3.5 bg-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all transform hover:scale-105 active:scale-95">
-        <i data-lucide="calendar-plus" class="w-5 h-5"></i> Nouveau Rendez-vous
-    </a>
+<div class="mb-12">
+    <h1 class="text-4xl font-bold text-slate-800 tracking-tight mb-2">Gestion des Rendez-vous</h1>
+    <p class="text-slate-500 font-medium">Consultez et gérez vos prochaines consultations patients.</p>
 </div>
 
 <div class="bg-white rounded-4xl border border-slate-200/60 shadow-sm overflow-hidden">
     <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
         <h3 class="text-xl font-bold text-slate-800 flex items-center gap-3">
-            <i data-lucide="calendar" class="text-indigo-600"></i> Historique de mes rendez-vous
+            <i data-lucide="calendar-check" class="text-indigo-600"></i> Liste des Rendez-vous
         </h3>
     </div>
     <div class="overflow-x-auto">
@@ -25,7 +20,7 @@
                 <tr class="bg-slate-50/50 border-b border-slate-100">
                     <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Référence</th>
                     <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Date & Heure</th>
-                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Médecin</th>
+                    <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Patient</th>
                     <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Motif</th>
                     <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Statut</th>
                     <th class="px-8 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
@@ -45,12 +40,12 @@
                     </td>
                     <td class="px-8 py-6">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                {{ substr($rdv->medecin->user->name, 0, 1) }}
+                            <div class="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                                {{ substr($rdv->patient->user->name, 0, 1) }}
                             </div>
                             <div>
-                                <p class="text-sm font-bold text-slate-800">Dr. {{ $rdv->medecin->user->name }}</p>
-                                <p class="text-[11px] font-medium text-slate-400">{{ $rdv->medecin->service->nom ?? 'Général' }}</p>
+                                <p class="text-sm font-bold text-slate-800">{{ $rdv->patient->user->name }}</p>
+                                <p class="text-[11px] font-medium text-slate-400">{{ $rdv->patient->telephone }}</p>
                             </div>
                         </div>
                     </td>
@@ -71,11 +66,14 @@
                             {{ ucfirst(str_replace('_', ' ', $rdv->statut)) }}
                         </span>
                     </td>
-                    <td class="px-8 py-6 text-right">
+                    <td class="px-8 py-6">
                         <div class="flex justify-end gap-2">
-                            @if($rdv->statut === 'planifie' || $rdv->statut === 'confirme')
-                            <button class="p-2.5 bg-white border border-slate-200 text-rose-400 rounded-xl hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all shadow-sm" title="Annuler le RDV">
-                                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                            <a href="{{ route('patients.show', $rdv->patient) }}" class="p-2.5 bg-white border border-slate-200 text-slate-400 rounded-xl hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-all shadow-sm" title="Dossier Patient">
+                                <i data-lucide="folder-heart" class="w-4 h-4"></i>
+                            </a>
+                            @if($rdv->statut === 'planifie')
+                            <button class="p-2.5 bg-white border border-slate-200 text-slate-400 rounded-xl hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all shadow-sm" title="Confirmer">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
                             </button>
                             @endif
                         </div>
@@ -85,10 +83,7 @@
                 <tr>
                     <td colspan="6" class="px-8 py-32 text-center text-slate-400">
                         <i data-lucide="calendar-off" class="w-20 h-20 mx-auto mb-6 opacity-20"></i>
-                        <h3 class="text-2xl font-bold">Aucun rendez-vous planifié</h3>
-                        <a href="{{ route('patient.rendezvous.create') }}" class="mt-4 inline-flex items-center gap-2 text-indigo-600 font-bold hover:underline">
-                            Prendre mon premier rendez-vous <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                        </a>
+                        <h3 class="text-2xl font-bold">Aucun rendez-vous trouvé</h3>
                     </td>
                 </tr>
                 @endforelse
