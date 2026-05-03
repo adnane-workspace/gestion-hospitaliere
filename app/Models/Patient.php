@@ -20,8 +20,18 @@ class Patient extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function medecinTraitant()
+    {
+        return $this->belongsTo(Medecin::class, 'medecin_traitant_id');
+    }
+
     public function rendezvous()
     {
         return $this->hasMany(RendezVous::class);
+    }
+
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class);
     }
 }

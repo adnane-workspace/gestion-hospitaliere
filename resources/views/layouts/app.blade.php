@@ -208,7 +208,7 @@
                         📅 Mes Consultations
                     </a>
                 </li>
-                <li class="nav-item"><a href="/patients" class="nav-link">👥 Mes Patients</a></li>
+                <li class="nav-item"><a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">👥 Mes Patients</a></li>
             @endif
 
             @if(auth()->user()->isPatient())
@@ -217,7 +217,7 @@
             @endif
 
             @if(auth()->user()->isAdmin())
-                <li class="nav-item"><a href="/patients" class="nav-link">👥 Gestion Patients</a></li>
+                <li class="nav-item"><a href="{{ route('patients.index') }}" class="nav-link {{ request()->routeIs('patients.*') ? 'active' : '' }}">👥 Gestion Patients</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">👨‍⚕️ Gestion Médecins</a></li>
                 <li class="nav-item"><a href="#" class="nav-link">💰 Comptabilité</a></li>
             @endif

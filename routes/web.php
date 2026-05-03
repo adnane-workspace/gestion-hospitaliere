@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\PatientController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -39,6 +40,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/patient/dashboard', [DashboardController::class, 'index'])->name('patient.dashboard');
         // Autres routes patient ici...
     });
+
+    // --- GESTION PATIENTS ---
+    Route::resource('patients', PatientController::class);
 
     // --- GESTION PROFIL ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
