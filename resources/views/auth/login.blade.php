@@ -114,7 +114,12 @@
                     </div>
                 </form>
 
-                
+                <div class="mt-8 text-center">
+                    <p class="text-slate-500 font-medium">
+                        Pas encore de compte ? 
+                        <a href="{{ route('register', ['role' => 'patient']) }}" class="text-indigo-600 font-bold hover:underline ml-1 transition-all">Créer un compte</a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
