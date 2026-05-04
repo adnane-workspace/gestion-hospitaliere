@@ -26,6 +26,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- ESPACE ADMIN ---
     Route::middleware('auth.role:admin')->group(function () {
         Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/admin/medecins', [App\Http\Controllers\AdminController::class, 'indexMedecins'])->name('admin.medecins.index');
         Route::get('/admin/medecins/en-attente', [App\Http\Controllers\AdminController::class, 'pendingMedecins'])->name('admin.medecins.pending');
         Route::post('/admin/medecins/{user}/activer', [App\Http\Controllers\AdminController::class, 'activateMedecin'])->name('admin.medecins.activate');
     });

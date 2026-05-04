@@ -10,6 +10,19 @@ use Illuminate\Http\Request;
 class AdminController extends Controller
 {
     /**
+     * Liste de tous les médecins (actifs et en attente).
+     */
+    public function indexMedecins()
+    {
+        $medecins = User::where('role', 'medecin')
+            ->orderBy('is_active', 'asc') // En attente en premier
+            ->orderBy('name', 'asc')
+            ->get();
+
+        return view('admin.medecins.index', compact('medecins'));
+    }
+
+    /**
      * Liste des médecins en attente d'activation.
      */
     public function pendingMedecins()
