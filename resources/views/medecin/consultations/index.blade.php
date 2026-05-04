@@ -48,8 +48,15 @@
                         "{{ Str::limit($consultation->diagnostic_principal, 60) }}"
                     </td>
                     <td class="px-8 py-6">
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $consultation->statut === 'Terminé' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600' }}">
-                            {{ $consultation->statut }}
+                        @php
+                            $statusClass = match($consultation->statut) {
+                                'terminee' => 'bg-emerald-50 text-emerald-600',
+                                'annulee' => 'bg-rose-50 text-rose-600',
+                                default => 'bg-amber-50 text-amber-600',
+                            };
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusClass }}">
+                            {{ ucfirst(str_replace('_', ' ', $consultation->statut)) }}
                         </span>
                     </td>
                     <td class="px-8 py-6">

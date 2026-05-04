@@ -13,7 +13,7 @@ class Consultation extends Model
 
     protected $fillable = [
         'rendezvous_id', 'patient_id', 'medecin_id', 'service_id',
-        'date_heure', 'diagnostic_principal', 'statut'
+        'reference', 'date_heure', 'motif_consultation', 'diagnostic_principal', 'statut'
     ];
 
     protected $casts = [
@@ -33,5 +33,10 @@ class Consultation extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function rendezvous(): BelongsTo
+    {
+        return $this->belongsTo(RendezVous::class, 'rendezvous_id');
     }
 }

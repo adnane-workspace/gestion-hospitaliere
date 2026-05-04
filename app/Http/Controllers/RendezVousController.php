@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRendezVousRequest;
+use App\Models\RendezVous;
+use App\Notifications\RendezVousCreeNotification;
 use App\Services\RendezVousService;
-use Illuminate\Http\JsonResponse;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class RendezVousController extends Controller
 {
@@ -21,16 +23,38 @@ class RendezVousController extends Controller
      */
     public function index()
     {
-        $patient = \Illuminate\Support\Facades\Auth::user()->patient;
+        $this->authorize('viewAny', RendezVous::class);
+        $patient = Auth::user()->patient;
 
         if (!$patient) {
             return redirect()->route('dashboard')->with('error', 'Profil patient non trouvé.');
         }
 
-        $appointments = \App\Models\RendezVous::with('medecin.user')
+        $query = RendezVous::with('medecin.user', 'medecin.service')
             ->where('patient_id', $patient->id)
-            ->orderBy('date_heure_debut', 'desc')
-            ->paginate(10);
+            ->orderBy('date_heure_debut', 'desc');
+
+        if (request('statut')) {
+            $query->where('statut', request('statut'));
+        }
+
+        if (request('date_debut')) {
+            $query->whereDate('date_heure_debut', '>=', request('date_debut'));
+        }
+
+        if (request('date_fin')) {
+            $query->whereDate('date_heure_debut', '<=', request('date_fin'));
+        }
+
+        if (request('search')) {
+            $search = request('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('reference', 'like', "%{$search}%")
+                    ->orWhere('motif', 'like', "%{$search}%");
+            });
+        }
+
+        $appointments = $query->paginate(10)->withQueryString();
 
         return view('patient.rendezvous.index', compact('appointments'));
     }
@@ -40,18 +64,60 @@ class RendezVousController extends Controller
      */
     public function medecinIndex()
     {
-        $medecin = \Illuminate\Support\Facades\Auth::user()->medecin;
+        $this->authorize('viewAny', RendezVous::class);
+        $medecin = Auth::user()->medecin;
 
         if (!$medecin) {
             return redirect()->route('dashboard')->with('error', 'Profil médecin non trouvé.');
         }
 
-        $appointments = \App\Models\RendezVous::with('patient.user')
+        $query = RendezVous::with('patient.user')
             ->where('medecin_id', $medecin->id)
-            ->orderBy('date_heure_debut', 'desc')
-            ->paginate(15);
+            ->orderBy('date_heure_debut', 'desc');
+
+        if (request('statut')) {
+            $query->where('statut', request('statut'));
+        }
+
+        if (request('date_debut')) {
+            $query->whereDate('date_heure_debut', '>=', request('date_debut'));
+        }
+
+        if (request('date_fin')) {
+            $query->whereDate('date_heure_debut', '<=', request('date_fin'));
+        }
+
+        if (request('search')) {
+            $search = request('search');
+            $query->whereHas('patient.user', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
+            });
+        }
+
+        $appointments = $query->paginate(15)->withQueryString();
 
         return view('medecin.rendezvous.index', compact('appointments'));
+    }
+
+    /**
+     * Confirm a scheduled appointment.
+     */
+    public function confirm(RendezVous $rendezvous)
+    {
+        $this->authorize('view', $rendezvous);
+
+        $medecin = Auth::user()->medecin;
+        if (!$medecin || $rendezvous->medecin_id !== $medecin->id) {
+            return back()->with('error', 'Action non autorisée.');
+        }
+
+        if (!$rendezvous->canTransitionTo(RendezVous::STATUT_CONFIRME)) {
+            return back()->with('error', 'Ce rendez-vous ne peut pas être confirmé dans son statut actuel.');
+        }
+
+        $rendezvous->update(['statut' => RendezVous::STATUT_CONFIRME]);
+
+        return back()->with('success', 'Le rendez-vous a été confirmé.');
     }
 
     /**
@@ -59,6 +125,7 @@ class RendezVousController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', RendezVous::class);
         $medecins = \App\Models\Medecin::with('user', 'service')->get();
         $services = \App\Models\Service::all();
         return view('patient.rendezvous.create', compact('medecins', 'services'));
@@ -67,35 +134,38 @@ class RendezVousController extends Controller
     /**
      * Store a newly created appointment.
      */
-    public function store(\Illuminate\Http\Request $request)
+    public function store(StoreRendezVousRequest $request)
     {
-        $validated = $request->validate([
-            'medecin_id' => 'required|exists:medecins,id',
-            'date_heure_debut' => 'required|date|after:now',
-            'motif' => 'nullable|string|max:255',
-        ]);
+        $this->authorize('create', RendezVous::class);
+        $validated = $request->validated();
 
-        $patient = \Illuminate\Support\Facades\Auth::user()->patient;
+        $patient = Auth::user()->patient;
 
         if (!$patient) {
             return back()->with('error', 'Profil patient non trouvé.');
         }
 
-        // Génération d'une référence unique
-        $reference = 'RDV-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(5));
+        try {
+            $rendezVous = $this->rendezVousService->reserver([
+                'patient_id' => $patient->id,
+                'medecin_id' => $validated['medecin_id'],
+                'date_heure_debut' => $validated['date_heure_debut'],
+                'duree_minutes' => $validated['duree_minutes'] ?? 30,
+                'motif' => $validated['motif'] ?? 'Consultation',
+                'type_rendez_vous' => $validated['type_rendez_vous'] ?? 'premiere_consultation',
+                'canal_prise_rdv' => 'en_ligne',
+            ]);
+        } catch (Exception $exception) {
+            return back()->withInput()->with('error', $exception->getMessage());
+        }
 
-        \App\Models\RendezVous::create([
-            'reference' => $reference,
-            'patient_id' => $patient->id,
-            'medecin_id' => $validated['medecin_id'],
-            'date_heure_debut' => $validated['date_heure_debut'],
-            'date_heure_fin' => \Carbon\Carbon::parse($validated['date_heure_debut'])->addMinutes(30),
-            'motif' => $validated['motif'] ?? 'Consultation',
-            'statut' => 'planifie',
-            'type_rendez_vous' => 'premiere_consultation',
-            'canal_prise_rdv' => 'en_ligne',
-        ]);
+        $medecinUser = optional($rendezVous->medecin)->user;
+        if ($medecinUser) {
+            $medecinUser->notify(new RendezVousCreeNotification($rendezVous, 'medecin'));
+        }
 
-        return redirect()->route('patient.dashboard')->with('success', "Votre rendez-vous a été enregistré. Référence : $reference");
+        $patient->user?->notify(new RendezVousCreeNotification($rendezVous, 'patient'));
+
+        return redirect()->route('patient.dashboard')->with('success', "Votre rendez-vous a été enregistré. Référence : {$rendezVous->reference}");
     }
 }

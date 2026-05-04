@@ -48,13 +48,16 @@
         :class="sidebarOpen ? 'w-72' : 'w-24'"
     >
         <!-- Logo -->
-        <div class="flex items-center gap-4 px-2 mb-10 overflow-hidden whitespace-nowrap">
-            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-tr from-indigo-600 to-indigo-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200">
-                <i data-lucide="activity" class="w-6 h-6"></i>
+        <div class="flex items-center gap-4 px-2 mb-10 whitespace-nowrap">
+            <div class="flex-shrink-0 w-12 h-12 bg-gradient-to-tr from-indigo-700 to-indigo-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 font-extrabold text-sm tracking-wide">
+                HM
             </div>
-            <span class="text-xl font-bold tracking-tight text-slate-800" x-show="sidebarOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
-                Hospit<span class="text-indigo-600">Manage</span>
-            </span>
+            <div x-show="sidebarOpen" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 -translate-x-4" x-transition:enter-end="opacity-100 translate-x-0">
+                <p class="text-xl font-extrabold tracking-tight text-slate-800 leading-none">
+                    Hospit<span class="text-indigo-600">Manage</span>
+                </p>
+                <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-1">Gestion hospitaliere</p>
+            </div>
         </div>
 
         <!-- Nav -->
@@ -75,9 +78,17 @@
                     <i data-lucide="clipboard-list" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mes Consultations</span>
                 </a>
+                <a href="{{ route('medecin.disponibilites.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('medecin.disponibilites.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="clock-3" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Disponibilites</span>
+                </a>
                 <a href="{{ route('patients.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('patients.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
                     <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mes Patients</span>
+                </a>
+                <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('messages.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="messages-square" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Messagerie</span>
                 </a>
             @endif
 
@@ -95,6 +106,10 @@
                     <i data-lucide="folder-heart" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Mon Dossier</span>
                 </a>
+                <a href="{{ route('messages.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('messages.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
+                    <i data-lucide="messages-square" class="w-5 h-5 flex-shrink-0"></i>
+                    <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Messagerie</span>
+                </a>
             @endif
 
             @if(auth()->user()->isAdmin())
@@ -103,11 +118,16 @@
                     <i data-lucide="users" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Gestion Patients</span>
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group text-slate-500 hover:bg-indigo-50 hover:text-indigo-600">
+                <a href="{{ route('admin.medecins.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('admin.medecins.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
                     <i data-lucide="user-cog" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Gestion Médecins</span>
+                    @if($pendingMedecinsCount > 0)
+                        <span class="ml-auto w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse" x-show="sidebarOpen">
+                            {{ $pendingMedecinsCount }}
+                        </span>
+                    @endif
                 </a>
-                <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group text-slate-500 hover:bg-indigo-50 hover:text-indigo-600">
+                <a href="{{ route('admin.comptabilite') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('admin.comptabilite') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
                     <i data-lucide="banknote" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Comptabilité</span>
                 </a>
@@ -141,11 +161,31 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-4">
-                <button class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200/60 text-slate-400 hover:text-indigo-600 transition-all relative">
+            <div class="flex items-center gap-4" x-data="{ notificationsOpen: false, notifications: [] }">
+                <button
+                    @click="notificationsOpen = !notificationsOpen"
+                    class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200/60 text-slate-400 hover:text-indigo-600 transition-all relative"
+                >
                     <i data-lucide="bell" class="w-5 h-5"></i>
-                    <span class="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                    @if($unreadNotificationsCount > 0)
+                        <span id="notifications-dot" class="absolute top-3 right-3 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+                    @endif
                 </button>
+
+                <div
+                    x-cloak
+                    x-show="notificationsOpen"
+                    @click.away="notificationsOpen = false"
+                    class="absolute right-10 top-24 w-[24rem] max-h-96 overflow-auto bg-white rounded-2xl border border-slate-200 shadow-2xl z-50"
+                >
+                    <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                        <p class="text-sm font-bold text-slate-800">Notifications</p>
+                        <button id="mark-all-read" class="text-xs text-indigo-600 font-semibold hover:underline">Tout marquer lu</button>
+                    </div>
+                    <div id="notifications-list" class="divide-y divide-slate-100">
+                        <p class="p-4 text-sm text-slate-400">Chargement...</p>
+                    </div>
+                </div>
 
                 <div class="flex items-center gap-3 px-4 py-2 bg-white rounded-2xl border border-slate-200/60 shadow-sm">
                     <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-indigo-100">
@@ -178,6 +218,49 @@
 
     <script>
         lucide.createIcons();
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('{{ route('notifications.index') }}');
+                const data = await response.json();
+                const list = document.getElementById('notifications-list');
+                const dot = document.getElementById('notifications-dot');
+
+                if (!list) return;
+
+                if (!data.notifications.length) {
+                    list.innerHTML = '<p class="p-4 text-sm text-slate-400">Aucune notification recente.</p>';
+                } else {
+                    list.innerHTML = data.notifications.map((item) => `
+                        <div class="p-4 hover:bg-slate-50 transition">
+                            <p class="text-sm font-semibold text-slate-800">${item.title}</p>
+                            <p class="text-xs text-slate-500 mt-1">${item.reference ? `Ref: ${item.reference}` : ''} ${item.motif ?? ''}</p>
+                            <p class="text-[11px] text-slate-400 mt-2">${item.created_at ?? ''}</p>
+                        </div>
+                    `).join('');
+                }
+
+                if (dot) {
+                    dot.style.display = data.unread_count > 0 ? 'block' : 'none';
+                }
+            } catch (error) {
+                // Silent fail to keep layout stable
+            }
+        }
+
+        document.getElementById('mark-all-read')?.addEventListener('click', async () => {
+            await fetch('{{ route('notifications.readAll') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            });
+            loadNotifications();
+        });
+
+        loadNotifications();
+        setInterval(loadNotifications, 30000);
     </script>
 </body>
 

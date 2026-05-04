@@ -2,35 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePatientRequest;
+use App\Http\Requests\UpdatePatientRequest;
 use App\Models\Patient;
+use App\Services\PatientDirectoryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class PatientController extends Controller
 {
+    public function __construct(
+        private readonly PatientDirectoryService $patientDirectoryService
+    ) {
+    }
+
     /**
      * Display a listing of patients.
      */
     public function index(Request $request)
     {
-        $user = Auth::user();
-        $query = Patient::with(['user', 'medecinTraitant']);
-
-        // Si c'est un médecin, on peut filtrer pour ne montrer que ses patients (optionnel)
-        // Mais généralement, un médecin peut chercher n'importe quel patient dans l'hôpital.
-        // Pour cet exemple, on montre tout mais on pourrait limiter si besoin.
-        
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nom', 'like', "%$search%")
-                  ->orWhere('prenom', 'like', "%$search%")
-                  ->orWhere('numero_dossier', 'like', "%$search%")
-                  ->orWhere('cin', 'like', "%$search%");
-            });
-        }
-
-        $patients = $query->orderBy('nom', 'asc')->paginate(15);
+        $this->authorize('viewAny', Patient::class);
+        $patients = $this->patientDirectoryService->paginate($request, 15);
 
         return view('patients.index', compact('patients'));
     }
@@ -54,6 +46,7 @@ class PatientController extends Controller
      */
     public function show(Patient $patient)
     {
+        $this->authorize('view', $patient);
         $patient->load(['user', 'medecinTraitant', 'consultations.medecin', 'rendezvous.medecin']);
         return view('patients.show', compact('patient'));
     }
@@ -63,6 +56,7 @@ class PatientController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', Patient::class);
         $medecins = \App\Models\Medecin::with('user')->get();
         $services = \App\Models\Service::all();
         return view('patients.create', compact('medecins', 'services'));
@@ -71,18 +65,10 @@ class PatientController extends Controller
     /**
      * Store a newly created patient in storage.
      */
-    public function store(Request $request)
+    public function store(StorePatientRequest $request)
     {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:100',
-            'prenom' => 'required|string|max:100',
-            'numero_dossier' => 'required|string|unique:patients,numero_dossier',
-            'telephone' => 'required|string|max:20',
-            'date_naissance' => 'required|date',
-            'genre' => 'required|in:homme,femme,autre',
-        ]);
-
-        $patient = Patient::create($validated);
+        $this->authorize('create', Patient::class);
+        $patient = Patient::create($request->validated());
 
         return redirect()->route('patients.show', $patient)->with('success', 'Patient créé avec succès.');
     }
@@ -92,6 +78,7 @@ class PatientController extends Controller
      */
     public function edit(Patient $patient)
     {
+        $this->authorize('update', $patient);
         $medecins = \App\Models\Medecin::with('user')->get();
         $services = \App\Models\Service::all();
         return view('patients.edit', compact('patient', 'medecins', 'services'));
@@ -100,16 +87,10 @@ class PatientController extends Controller
     /**
      * Update the specified patient in storage.
      */
-    public function update(Request $request, Patient $patient)
+    public function update(UpdatePatientRequest $request, Patient $patient)
     {
-        $validated = $request->validate([
-            'nom' => 'required|string|max:100',
-            'prenom' => 'required|string|max:100',
-            'telephone' => 'required|string|max:20',
-            'statut' => 'required|in:actif,inactif,decede,transfere',
-        ]);
-
-        $patient->update($validated);
+        $this->authorize('update', $patient);
+        $patient->update($request->validated());
 
         return redirect()->route('patients.show', $patient)->with('success', 'Dossier patient mis à jour.');
     }

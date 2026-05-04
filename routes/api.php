@@ -8,4 +8,4 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
+Route::middleware('auth:sanctum')->get('/dashboard/stats', [DashboardController::class, 'getStats']);

@@ -14,6 +14,18 @@
 </div>
 
 <div class="bg-white rounded-4xl border border-slate-200/60 shadow-sm overflow-hidden">
+    <form method="GET" class="p-6 border-b border-slate-100 grid grid-cols-1 md:grid-cols-5 gap-3 bg-slate-50/40">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Reference ou motif" class="rounded-xl border-slate-200 text-sm">
+        <select name="statut" class="rounded-xl border-slate-200 text-sm">
+            <option value="">Tous statuts</option>
+            @foreach(['planifie','confirme','en_attente','en_cours','termine','annule','reporte','patient_absent'] as $statut)
+                <option value="{{ $statut }}" @selected(request('statut') === $statut)>{{ ucfirst(str_replace('_', ' ', $statut)) }}</option>
+            @endforeach
+        </select>
+        <input type="date" name="date_debut" value="{{ request('date_debut') }}" class="rounded-xl border-slate-200 text-sm">
+        <input type="date" name="date_fin" value="{{ request('date_fin') }}" class="rounded-xl border-slate-200 text-sm">
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold">Filtrer</button>
+    </form>
     <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
         <h3 class="text-xl font-bold text-slate-800 flex items-center gap-3">
             <i data-lucide="calendar" class="text-indigo-600"></i> Historique de mes rendez-vous

@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'auth.role' => \App\Http\Middleware\CheckRole::class,
+            'ensure.profile' => \App\Http\Middleware\EnsureRoleProfileExists::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

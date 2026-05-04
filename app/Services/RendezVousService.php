@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\RendezVous;
+use App\Models\MedecinDisponibilite;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Exception;
@@ -19,11 +20,18 @@ class RendezVousService
     public function reserver(array $data): RendezVous
     {
         $debut = Carbon::parse($data['date_heure_debut']);
-        $duree = $data['duree_minutes'] ?? 30;
+        $duree = (int) ($data['duree_minutes'] ?? 30);
         $fin = (clone $debut)->addMinutes($duree);
 
+        $medecinId = (int) $data['medecin_id'];
+        $patientId = (int) $data['patient_id'];
+
+        if (!$this->medecinEstDisponibleSelonPlanning($medecinId, $debut, $fin)) {
+            throw new Exception("Le medecin n'est pas disponible sur ce creneau.");
+        }
+
         // 1. Vérifier si le médecin est disponible
-        if ($this->medecinEstOccupe($data['medecin_id'], $debut, $fin)) {
+        if ($this->medecinEstOccupe($medecinId, $debut, $fin)) {
             throw new Exception("Le médecin est déjà occupé sur cette plage horaire.");
         }
 
@@ -31,6 +39,8 @@ class RendezVousService
         $data['reference'] = 'RDV-' . date('Y') . '-' . strtoupper(Str::random(6));
         $data['date_heure_fin'] = $fin;
         $data['statut'] = 'planifie';
+        $data['medecin_id'] = $medecinId;
+        $data['patient_id'] = $patientId;
 
         // 3. Création en base de données
         return RendezVous::create($data);
@@ -50,6 +60,25 @@ class RendezVousService
                       ->where('date_heure_fin', '>', $debut);
                 });
             })
+            ->exists();
+    }
+
+    private function medecinEstDisponibleSelonPlanning(int $medecinId, Carbon $debut, Carbon $fin): bool
+    {
+        $jour = (int) $debut->dayOfWeekIso;
+        $debutHeure = $debut->format('H:i:s');
+        $finHeure = $fin->format('H:i:s');
+
+        $planningExiste = MedecinDisponibilite::where('medecin_id', $medecinId)->exists();
+        if (!$planningExiste) {
+            return true;
+        }
+
+        return MedecinDisponibilite::where('medecin_id', $medecinId)
+            ->where('jour_semaine', $jour)
+            ->where('is_active', true)
+            ->where('heure_debut', '<=', $debutHeure)
+            ->where('heure_fin', '>=', $finHeure)
             ->exists();
     }
 }

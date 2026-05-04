@@ -9,6 +9,18 @@
 </div>
 
 <div class="bg-white rounded-4xl border border-slate-200/60 shadow-sm overflow-hidden">
+    <form method="GET" class="p-6 border-b border-slate-100 grid grid-cols-1 md:grid-cols-5 gap-3 bg-slate-50/40">
+        <input type="text" name="search" value="{{ request('search') }}" placeholder="Nom patient" class="rounded-xl border-slate-200 text-sm">
+        <select name="statut" class="rounded-xl border-slate-200 text-sm">
+            <option value="">Tous statuts</option>
+            @foreach(['planifie','confirme','en_attente','en_cours','termine','annule','reporte','patient_absent'] as $statut)
+                <option value="{{ $statut }}" @selected(request('statut') === $statut)>{{ ucfirst(str_replace('_', ' ', $statut)) }}</option>
+            @endforeach
+        </select>
+        <input type="date" name="date_debut" value="{{ request('date_debut') }}" class="rounded-xl border-slate-200 text-sm">
+        <input type="date" name="date_fin" value="{{ request('date_fin') }}" class="rounded-xl border-slate-200 text-sm">
+        <button class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-sm font-semibold">Filtrer</button>
+    </form>
     <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
         <h3 class="text-xl font-bold text-slate-800 flex items-center gap-3">
             <i data-lucide="calendar-check" class="text-indigo-600"></i> Liste des Rendez-vous
@@ -72,9 +84,12 @@
                                 <i data-lucide="folder-heart" class="w-4 h-4"></i>
                             </a>
                             @if($rdv->statut === 'planifie')
-                            <button class="p-2.5 bg-white border border-slate-200 text-slate-400 rounded-xl hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all shadow-sm" title="Confirmer">
-                                <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            </button>
+                            <form action="{{ route('medecin.rendezvous.confirm', $rdv) }}" method="POST" class="inline-block">
+                                @csrf
+                                <button type="submit" class="p-2.5 bg-white border border-slate-200 text-slate-400 rounded-xl hover:bg-emerald-500 hover:text-white hover:border-emerald-500 transition-all shadow-sm" title="Confirmer">
+                                    <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                </button>
+                            </form>
                             @endif
                         </div>
                     </td>

@@ -66,32 +66,144 @@
             <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
                 <i data-lucide="alert-triangle"></i> Allergies & Alertes
             </h3>
-            <p class="text-rose-100 font-medium leading-relaxed italic">
-                "{{ $patient->allergies ?? 'Aucune allergie connue' }}"
-            </p>
+            @if($patient->allergies && count($patient->allergies) > 0)
+                <div class="space-y-2">
+                    @foreach($patient->allergies as $allergie)
+                        <div class="flex items-center gap-2 bg-rose-500/20 px-3 py-2 rounded-lg">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                            <span class="font-medium">{{ $allergie }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-rose-100 font-medium leading-relaxed italic">
+                    "Aucune allergie connue"
+                </p>
+            @endif
+        </div>
+
+        <!-- Contact d'urgence -->
+        <div class="bg-blue-600 rounded-4xl p-8 text-white shadow-2xl shadow-blue-200">
+            <h3 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i data-lucide="phone"></i> Contact d'Urgence
+            </h3>
+            <div class="space-y-2">
+                <p class="font-bold text-lg">{{ $patient->contact_urgence_nom ?? 'Non spécifié' }}</p>
+                <p class="text-blue-100">{{ $patient->telephone_urgence ?? 'N/A' }}</p>
+            </div>
         </div>
     </div>
 
     <!-- Main Medical Data -->
     <div class="lg:col-span-2 space-y-8">
-        <!-- Vitals -->
+        <!-- Dossier Médical Complet -->
         <div class="bg-white rounded-4xl border border-slate-200/60 p-8 shadow-sm">
             <h3 class="text-xl font-bold text-slate-800 mb-8 flex items-center gap-2">
-                <i data-lucide="activity" class="text-indigo-600"></i> Données Vitales
+                <i data-lucide="file-text" class="text-indigo-600"></i> Dossier Médical
             </h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Groupe Sanguin</p>
-                    <p class="text-3xl font-black text-rose-500">{{ $patient->groupe_sanguin ?? '??' }}</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Informations Médicales de Base -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-bold text-slate-700 border-b border-slate-200 pb-2">Informations Médicales</h4>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Groupe Sanguin</p>
+                            <p class="text-xl font-black text-rose-500">{{ $patient->groupe_sanguin ?? 'Non spécifié' }}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Tension Artérielle</p>
+                            <p class="text-xl font-black text-blue-600">{{ $patient->tension_arterielle ?? 'Non mesurée' }}</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Fréquence Cardiaque</p>
+                            <p class="text-xl font-black text-green-600">{{ $patient->frequence_cardiaque ?? '--' }} <span class="text-sm">bpm</span></p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">IMC</p>
+                            <p class="text-xl font-black text-purple-600">{{ $patient->imc ?? '--' }}</p>
+                            @if($patient->imc_category)
+                                <p class="text-xs text-slate-500 mt-1">{{ $patient->imc_category }}</p>
+                            @endif
+                        </div>
+                    </div>
                 </div>
-                <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Poids</p>
-                    <p class="text-3xl font-black text-slate-800">{{ $patient->poids ?? '--' }} <span class="text-sm">kg</span></p>
+
+                <!-- Traitements et Maladies -->
+                <div class="space-y-6">
+                    <h4 class="text-lg font-bold text-slate-700 border-b border-slate-200 pb-2">Traitements & Pathologies</h4>
+
+                    @if($patient->maladies_chroniques && count($patient->maladies_chroniques) > 0)
+                        <div>
+                            <p class="text-sm font-bold text-amber-600 uppercase tracking-widest mb-3">Maladies Chroniques</p>
+                            <div class="space-y-2">
+                                @foreach($patient->maladies_chroniques as $maladie)
+                                    <div class="flex items-center gap-2 bg-amber-50 px-3 py-2 rounded-lg border border-amber-200">
+                                        <i data-lucide="activity" class="w-4 h-4 text-amber-500"></i>
+                                        <span class="text-amber-800 font-medium">{{ $maladie }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
+                    @if($patient->medicaments_actuels && count($patient->medicaments_actuels) > 0)
+                        <div>
+                            <p class="text-sm font-bold text-green-600 uppercase tracking-widest mb-3">Traitements Actuels</p>
+                            <div class="space-y-2">
+                                @foreach($patient->medicaments_actuels as $medicament)
+                                    <div class="flex items-center gap-2 bg-green-50 px-3 py-2 rounded-lg border border-green-200">
+                                        <i data-lucide="pill" class="w-4 h-4 text-green-500"></i>
+                                        <span class="text-green-800 font-medium">{{ $medicament }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
-                <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Taille</p>
-                    <p class="text-3xl font-black text-slate-800">{{ $patient->taille ?? '--' }} <span class="text-sm">cm</span></p>
-                </div>
+            </div>
+
+            <!-- Antécédents -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                @if($patient->antecedents_medicaux && count($patient->antecedents_medicaux) > 0)
+                    <div class="bg-blue-50 p-6 rounded-3xl border border-blue-200">
+                        <h5 class="text-sm font-bold text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4"></i> Antécédents Médicaux
+                        </h5>
+                        <ul class="space-y-2">
+                            @foreach($patient->antecedents_medicaux as $antecedent)
+                                <li class="text-blue-800 text-sm">• {{ $antecedent }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if($patient->antecedents_chirurgicaux && count($patient->antecedents_chirurgicaux) > 0)
+                    <div class="bg-purple-50 p-6 rounded-3xl border border-purple-200">
+                        <h5 class="text-sm font-bold text-purple-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i data-lucide="scissors" class="w-4 h-4"></i> Antécédents Chirurgicaux
+                        </h5>
+                        <ul class="space-y-2">
+                            @foreach($patient->antecedents_chirurgicaux as $antecedent)
+                                <li class="text-purple-800 text-sm">• {{ $antecedent }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                @if($patient->antecedents_familiaux && count($patient->antecedents_familiaux) > 0)
+                    <div class="bg-indigo-50 p-6 rounded-3xl border border-indigo-200">
+                        <h5 class="text-sm font-bold text-indigo-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <i data-lucide="users" class="w-4 h-4"></i> Antécédents Familiaux
+                        </h5>
+                        <ul class="space-y-2">
+                            @foreach($patient->antecedents_familiaux as $antecedent)
+                                <li class="text-indigo-800 text-sm">• {{ $antecedent }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
             </div>
         </div>
 

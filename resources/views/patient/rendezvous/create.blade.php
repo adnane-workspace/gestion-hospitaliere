@@ -91,6 +91,24 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider text-[10px]">Type de rendez-vous</label>
+                            <select name="type_rendez_vous" class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-slate-600 font-medium focus:ring-2 focus:ring-indigo-500 transition-all">
+                                <option value="premiere_consultation">Premiere consultation</option>
+                                <option value="suivi">Suivi</option>
+                                <option value="urgence">Urgence</option>
+                                <option value="controle">Controle</option>
+                                <option value="bilan">Bilan</option>
+                                <option value="acte_medical">Acte medical</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider text-[10px]">Duree (minutes)</label>
+                            <input type="number" min="10" max="120" step="5" name="duree_minutes" value="30" class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-slate-600 font-medium focus:ring-2 focus:ring-indigo-500 transition-all">
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wider text-[10px]">4. Motif de consultation</label>
                         <textarea name="motif" rows="3" placeholder="Ex: Contrôle annuel, douleurs..." class="w-full bg-slate-50 border-none rounded-2xl px-6 py-4 text-slate-600 font-medium focus:ring-2 focus:ring-indigo-500 transition-all resize-none"></textarea>

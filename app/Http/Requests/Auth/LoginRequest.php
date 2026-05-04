@@ -42,11 +42,33 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $baseCredentials = $this->only('email', 'password');
+
+        if (! Auth::attempt($baseCredentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+
+            // Check if the user exists but is inactive
+            $user = \App\Models\User::where('email', $this->email)->first();
+            if ($user && !$user->is_active) {
+                throw ValidationException::withMessages([
+                    'email' => 'Votre compte est en attente d\'approbation par l\'administrateur.',
+                ]);
+            }
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+            ]);
+        }
+
+        $user = Auth::user();
+
+        // On bloque uniquement les médecins non activés (workflow métier existant).
+        if ($user && $user->role === 'medecin' && !$user->is_active) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Votre compte est en attente d\'approbation par l\'administrateur.',
             ]);
         }
 

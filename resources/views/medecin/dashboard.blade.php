@@ -13,9 +13,9 @@
         <p class="text-slate-500 font-medium text-lg">Prêt pour vos consultations du jour ? Voici votre aperçu médical.</p>
     </div>
     <div class="flex items-center gap-4">
-        <button class="flex items-center gap-2 bg-white border border-slate-200 px-6 py-3.5 rounded-2xl text-slate-600 font-bold hover:bg-slate-50 transition-all shadow-sm">
+        <a href="{{ route('medecin.report') }}" class="inline-flex items-center gap-2 bg-white border border-slate-200 px-6 py-3.5 rounded-2xl text-slate-600 font-bold hover:bg-slate-50 transition-all shadow-sm">
             <i data-lucide="download" class="w-5 h-5"></i> Rapport
-        </button>
+        </a>
         <div class="bg-indigo-600 px-6 py-3.5 rounded-2xl text-white font-bold shadow-xl shadow-indigo-200">
             {{ now()->translatedFormat('d M Y') }}
         </div>
@@ -125,12 +125,15 @@
                     </div>
                 </div>
                 <div class="mt-auto space-y-4">
-                    <button class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl shadow-xl transition-transform hover:scale-[1.02] active:scale-95">
-                        Démarrer la Consultation
-                    </button>
-                    <button class="w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-all">
+                    <form method="POST" action="{{ route('medecin.consultations.start', $nextRdv) }}">
+                        @csrf
+                        <button type="submit" class="w-full py-4 bg-white text-indigo-900 font-black rounded-2xl shadow-xl transition-transform hover:scale-[1.02] active:scale-95">
+                            Demarrer la Consultation
+                        </button>
+                    </form>
+                    <a href="{{ route('patients.show', $nextRdv->patient) }}" class="block text-center w-full py-4 bg-white/5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/10 transition-all">
                         Voir le dossier complet
-                    </button>
+                    </a>
                 </div>
             @else
                 <div class="flex flex-col items-center justify-center flex-grow text-center opacity-50">
@@ -189,9 +192,12 @@
                         </span>
                     </td>
                     <td class="px-10 py-8 text-right">
-                        <button class="px-6 py-2.5 bg-indigo-600 text-white text-xs font-black rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:shadow-indigo-200 transition-all transform group-hover:scale-105">
-                            Consulter
-                        </button>
+                        <form method="POST" action="{{ route('medecin.consultations.start', $rdv) }}" class="inline">
+                            @csrf
+                            <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white text-xs font-black rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 hover:shadow-indigo-200 transition-all transform group-hover:scale-105">
+                                Consulter
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @empty

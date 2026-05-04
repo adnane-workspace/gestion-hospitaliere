@@ -122,6 +122,11 @@
                 </tbody>
             </table>
         </div>
+        <div class="p-6 border-t border-slate-100">
+            <a href="{{ route('patient.history.pdf') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-sm font-semibold hover:bg-slate-700 transition">
+                <i data-lucide="download" class="w-4 h-4"></i> Exporter mon historique en PDF
+            </a>
+        </div>
     </div>
 
     <!-- Documents & Sidebar Actions -->
@@ -130,7 +135,7 @@
             <div class="absolute -right-8 -bottom-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
             <h3 class="text-xl font-bold mb-2">Besoin d'aide ?</h3>
             <p class="text-indigo-100 text-sm mb-8 leading-relaxed">Consultez notre FAQ ou contactez directement le secrétariat pour toute urgence.</p>
-            <a href="#" class="inline-flex items-center justify-center px-6 py-3 bg-white text-indigo-600 font-bold rounded-2xl shadow-lg transition-transform hover:scale-105">
+            <a href="{{ route('messages.index') }}" class="inline-flex items-center justify-center px-6 py-3 bg-white text-indigo-600 font-bold rounded-2xl shadow-lg transition-transform hover:scale-105">
                 Nous Contacter
             </a>
         </div>
