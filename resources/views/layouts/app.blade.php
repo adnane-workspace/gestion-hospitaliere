@@ -121,9 +121,12 @@
                 <a href="{{ route('admin.medecins.index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ request()->routeIs('admin.medecins.*') ? 'bg-indigo-50 text-indigo-600' : 'text-slate-500 hover:bg-indigo-50 hover:text-indigo-600' }}">
                     <i data-lucide="user-cog" class="w-5 h-5 flex-shrink-0"></i>
                     <span class="font-semibold text-[15px]" x-show="sidebarOpen" x-transition>Gestion Médecins</span>
-                    @if($pendingMedecinsCount > 0)
+                    @php
+                        $pendingCount = \App\Models\User::where('role', 'medecin')->where('is_active', false)->count();
+                    @endphp
+                    @if($pendingCount > 0)
                         <span class="ml-auto w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse" x-show="sidebarOpen">
-                            {{ $pendingMedecinsCount }}
+                            {{ $pendingCount }}
                         </span>
                     @endif
                 </a>
