@@ -9,7 +9,7 @@ Application web de gestion hospitaliere (admin, medecin, patient) construite ave
 - Gestion des patients
 - Gestion des rendez-vous
 - Historique des consultations
-- Notifications in-app (base de donnees)
+- Notifications in-app (base de donnees)z
 - Messagerie patient-medecin
 - Gestion des disponibilites medecins
 - Données médicales détaillées pour les patients (groupe sanguin, allergies, antécédents, IMC, tension, fréquence cardiaque)
