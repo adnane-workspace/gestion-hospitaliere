@@ -265,6 +265,7 @@
         loadNotifications();
         setInterval(loadNotifications, 30000);
     </script>
+    @include('partials.chatbot')
 </body>
 
 </html>
