@@ -9,10 +9,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Check local storage theme on page load and apply 'dark' class early
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -32,9 +41,101 @@
     </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* Premium Global Dark Mode Styles */
+        .dark body {
+            background-color: #0b0f19 !important;
+            color: #f1f5f9 !important;
+        }
+        .dark aside {
+            background-color: #0f172a !important;
+            border-color: #1e293b !important;
+        }
+        .dark main {
+            background-color: #0b0f19 !important;
+        }
+        .dark .bg-white {
+            background-color: #0f172a !important;
+            border-color: #1e293b !important;
+            color: #f1f5f9 !important;
+        }
+        .dark .text-slate-800, .dark .text-slate-950, .dark .text-slate-900 {
+            color: #f1f5f9 !important;
+        }
+        .dark .text-slate-700 {
+            color: #cbd5e1 !important;
+        }
+        .dark .text-slate-600, .dark .text-slate-500 {
+            color: #94a3b8 !important;
+        }
+        .dark .text-slate-400 {
+            color: #64748b !important;
+        }
+        .dark .border-slate-200, .dark .border-slate-100, .dark .border-slate-200\/60, .dark .border-slate-100\/50, .dark .border-slate-200\/50 {
+            border-color: #1e293b !important;
+        }
+        .dark input, .dark select, .dark textarea {
+            background-color: #1e293b !important;
+            border-color: #334155 !important;
+            color: #f8fafc !important;
+        }
+        .dark input::placeholder {
+            color: #64748b !important;
+        }
+        .dark table th {
+            background-color: #1e293b !important;
+            color: #94a3b8 !important;
+        }
+        .dark table td {
+            border-color: #1e293b !important;
+            color: #cbd5e1 !important;
+        }
+        .dark tr:hover {
+            background-color: rgba(30, 41, 59, 0.4) !important;
+        }
+        .dark .hover\:bg-indigo-50:hover {
+            background-color: #1e293b !important;
+            color: #818cf8 !important;
+        }
+        .dark .hover\:bg-slate-50:hover {
+            background-color: #1e293b !important;
+        }
+        .dark .bg-slate-50 {
+            background-color: #1e293b !important;
+        }
+        .dark .apexcharts-text {
+            fill: #94a3b8 !important;
+        }
+        .dark .apexcharts-legend-text {
+            color: #cbd5e1 !important;
+        }
+        /* Custom sidebar styles for dark mode */
+        .dark aside a.text-slate-500:not(.bg-indigo-600) {
+            color: #94a3b8 !important;
+        }
+        .dark aside a.text-slate-500:not(.bg-indigo-600):hover {
+            background-color: #1e293b !important;
+            color: #818cf8 !important;
+        }
+    </style>
 </head>
 
-<body class="font-sans antialiased bg-slate-50 text-slate-900 overflow-x-hidden min-h-screen flex" x-data="{ sidebarOpen: true }">
+<body class="font-sans antialiased bg-slate-50 text-slate-900 overflow-x-hidden min-h-screen flex transition-colors duration-300" 
+      x-data="{ 
+          sidebarOpen: true,
+          darkMode: localStorage.getItem('theme') === 'dark',
+          toggleTheme() {
+              this.darkMode = !this.darkMode;
+              if (this.darkMode) {
+                  document.documentElement.classList.add('dark');
+                  localStorage.setItem('theme', 'dark');
+              } else {
+                  document.documentElement.classList.remove('dark');
+                  localStorage.setItem('theme', 'light');
+              }
+              setTimeout(() => { lucide.createIcons(); }, 50);
+          }
+      }">
     <!-- Background Elements -->
     <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div class="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] rounded-full bg-indigo-600/10 blur-[120px]"></div>
@@ -165,6 +266,16 @@
             </div>
             
             <div class="flex items-center gap-4" x-data="{ notificationsOpen: false, notifications: [] }">
+                <!-- Dark Mode Switcher Button -->
+                <button
+                    @click="toggleTheme()"
+                    class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200/60 text-slate-400 hover:text-indigo-600 transition-all relative dark:bg-slate-900 dark:border-slate-800 dark:text-slate-300 dark:hover:text-indigo-400"
+                    title="Changer de thème"
+                >
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block"></i>
+                    <i data-lucide="moon" class="w-5 h-5 block dark:hidden"></i>
+                </button>
+
                 <button
                     @click="notificationsOpen = !notificationsOpen"
                     class="w-12 h-12 flex items-center justify-center bg-white rounded-2xl shadow-sm border border-slate-200/60 text-slate-400 hover:text-indigo-600 transition-all relative"
